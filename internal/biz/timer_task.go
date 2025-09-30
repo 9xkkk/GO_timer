@@ -30,4 +30,5 @@ type TimerTaskRepo interface {
 type TaskCache interface {
 	BatchCreateTasks(ctx context.Context, tasks []*TimerTask) error
 	GetTasksByTime(ctx context.Context, table string, start, end int64) ([]*TimerTask, error)
+	UpdateLocalCache(ctx context.Context, table string) ([]*TimerTask, error)
 }

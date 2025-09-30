@@ -3,13 +3,14 @@ package data
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/BitofferHub/xtimer/internal/biz"
 	"github.com/BitofferHub/xtimer/internal/conf"
 	"github.com/BitofferHub/xtimer/internal/constant"
 	"github.com/BitofferHub/xtimer/internal/utils"
 	"github.com/redis/go-redis/v9"
-	"strconv"
-	"time"
 )
 
 type TaskCache struct {
@@ -47,6 +48,24 @@ func (t *TaskCache) BatchCreateTasks(ctx context.Context, tasks []*biz.TimerTask
 
 func (t *TaskCache) GetTasksByTime(ctx context.Context, table string, start, end int64) ([]*biz.TimerTask, error) {
 	timerIDUnixs, err := t.data.cache.ZRangeByScore(ctx, table, strconv.FormatInt(start, 10), strconv.FormatInt(end-1, 10))
+	if err != nil {
+		return nil, err
+	}
+
+	tasks := make([]*biz.TimerTask, 0, len(timerIDUnixs))
+	for _, timerIDUnix := range timerIDUnixs {
+		timerID, unix, _ := utils.SplitTimerIDUnix(timerIDUnix)
+		tasks = append(tasks, &biz.TimerTask{
+			TimerID:  int64(timerID),
+			RunTimer: unix,
+		})
+	}
+
+	return tasks, nil
+}
+
+func (t *TaskCache) UpdateLocalCache(ctx context.Context, table string) ([]*biz.TimerTask, error) {
+	timerIDUnixs, err := t.data.cache.ZRangeByScore(ctx, table, "1", "-1") //获取所有元素
 	if err != nil {
 		return nil, err
 	}

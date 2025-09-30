@@ -2,11 +2,12 @@ package biz
 
 import (
 	"context"
+	"time"
+
 	"github.com/BitofferHub/pkg/middlewares/lock"
 	"github.com/BitofferHub/pkg/middlewares/log"
 	"github.com/BitofferHub/xtimer/internal/conf"
 	"github.com/BitofferHub/xtimer/internal/utils"
-	"time"
 )
 
 // xtimerUseCase is a User usecase.
