@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strconv"
 	"time"
 
@@ -78,6 +79,10 @@ func (t *TaskCache) UpdateLocalCache(ctx context.Context, table string) ([]*biz.
 			RunTimer: unix,
 		})
 	}
+
+	sort.Slice(tasks, func(i, j int) bool {
+		return tasks[i].RunTimer < tasks[j].RunTimer
+	})
 
 	return tasks, nil
 }
