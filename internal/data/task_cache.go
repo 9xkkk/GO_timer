@@ -65,7 +65,7 @@ func (t *TaskCache) GetTasksByTime(ctx context.Context, table string, start, end
 }
 
 func (t *TaskCache) UpdateLocalCache(ctx context.Context, table string) ([]*biz.TimerTask, error) {
-	timerIDUnixs, err := t.data.cache.ZRangeByScore(ctx, table, "1", "-1") //获取所有元素
+	timerIDUnixs, err := t.data.cache.ZRange(ctx, table, 0, -1) //获取所有元素
 	if err != nil {
 		return nil, err
 	}
